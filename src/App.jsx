@@ -174,7 +174,11 @@ function App() {
                       padding: "20px",
                     }}
                   >
-                    <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
+                    <table
+                      cellPadding="0"
+                      cellSpacing="0"
+                      style={{ width: "100%" }}
+                    >
                       <tbody>
                         <tr>
                           <td>
@@ -259,29 +263,83 @@ function App() {
                       </div>
                     </div>
 
-                    <table cellPadding="0" cellSpacing="0" style={{ marginBottom: "15px" }}>
+                    <table
+                      cellPadding="0"
+                      cellSpacing="0"
+                      style={{ marginBottom: "15px" }}
+                    >
                       <tbody>
                         <tr>
-                          <td style={{ paddingRight: "5px", verticalAlign: "middle" }}>
-                            <img src={phoneIconDataUri} alt="Phone" style={{ width: "14px", height: "14px", display: "block" }} />
+                          <td
+                            style={{
+                              paddingRight: "5px",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            <img
+                              src={phoneIconDataUri}
+                              alt="Phone"
+                              style={{
+                                width: "14px",
+                                height: "14px",
+                                display: "block",
+                              }}
+                            />
                           </td>
-                          <td style={{ paddingRight: "15px", verticalAlign: "middle", fontSize: "12px", color: "#000000", fontFamily: "'DIN Pro', 'Arial', sans-serif" }}>
+                          <td
+                            style={{
+                              paddingRight: "15px",
+                              verticalAlign: "middle",
+                              fontSize: "12px",
+                              color: "#000000",
+                              fontFamily: "'DIN Pro', 'Arial', sans-serif",
+                            }}
+                          >
                             {formData.phone || "+49 XXX XXXXXXXX"}
                           </td>
-                          <td style={{ paddingRight: "5px", verticalAlign: "middle" }}>
-                            <img src={emailIconDataUri} alt="Email" style={{ width: "14px", height: "11px", display: "block" }} />
+                          <td
+                            style={{
+                              paddingRight: "5px",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            <img
+                              src={emailIconDataUri}
+                              alt="Email"
+                              style={{
+                                width: "14px",
+                                height: "11px",
+                                display: "block",
+                              }}
+                            />
                           </td>
-                          <td style={{ paddingRight: "15px", verticalAlign: "middle", fontSize: "12px", color: "#000000", fontFamily: "'DIN Pro', 'Arial', sans-serif" }}>
+                          <td
+                            style={{
+                              paddingRight: "15px",
+                              verticalAlign: "middle",
+                              fontSize: "12px",
+                              color: "#000000",
+                              fontFamily: "'DIN Pro', 'Arial', sans-serif",
+                            }}
+                          >
                             {formData.email || "email@spread.ai"}
                           </td>
                           <td style={{ verticalAlign: "middle" }}>
                             <a
-                              href="https://www.spread.ai"
+                              href="https://www.linkedin.com/company/spread-ai/posts/"
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{ display: "block", lineHeight: "0" }}
                             >
-                              <img src={linkedInIconDataUri} alt="LinkedIn" style={{ width: "14px", height: "14px", display: "block" }} />
+                              <img
+                                src={linkedInIconDataUri}
+                                alt="LinkedIn"
+                                style={{
+                                  width: "14px",
+                                  height: "14px",
+                                  display: "block",
+                                }}
+                              />
                             </a>
                           </td>
                         </tr>
@@ -300,7 +358,7 @@ function App() {
                     >
                       SPREAD GmbH
                       <br />
-                      <span style={{ fontWeight: "400"}}>
+                      <span style={{ fontWeight: "400" }}>
                         Köpenicker Str. 40c | 10179 Berlin
                       </span>
                     </div>
