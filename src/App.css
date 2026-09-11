@@ -66,6 +66,13 @@
   cursor: pointer;
 }
 
+.field-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
 .photo-preview-small {
   margin-top: 10px;
 }

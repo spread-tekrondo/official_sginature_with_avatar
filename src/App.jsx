@@ -1,6 +1,67 @@
 import { useState } from 'react';
 import './App.css';
-import spreadLogo from './assets/Spread_Logo_Orange.png';
+// `?inline` forces a data URI whatever the file size, so the copied signature
+// never references a URL on this site.
+import spreadLogo from './assets/spread-logo-184x40.png?inline';
+
+// Display size of the images inside the signature, in CSS px.
+const PHOTO_SIZE = 100;
+const LOGO_WIDTH = 92;
+const LOGO_HEIGHT = 20;
+// Bitmaps are shipped at twice their display size: crisp on high-DPI screens,
+// and at worst 2x (not 20x) if a mail client drops the sizing.
+const RENDER_SCALE = 2;
+
+// Crop the uploaded photo to a centered square and scale it to the size the
+// signature shows it at. Email clients (every Outlook variant included) ignore
+// `object-fit`, so a non-square photo forced into a square <img> box arrives
+// stretched; a photo shipped at its native resolution can also render at full
+// size when a client loses the CSS sizing (reply chains). Doing the crop and
+// the resize here means the bitmap itself is already right.
+function cropPhotoToSquare(file, size) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let source = img;
+      let side = Math.min(img.naturalWidth, img.naturalHeight);
+      let sx = Math.round((img.naturalWidth - side) / 2);
+      let sy = Math.round((img.naturalHeight - side) / 2);
+      // Downscale in halving steps: a single drawImage from a large photo
+      // straight to a small square aliases visibly in some browsers.
+      while (side > size * 2) {
+        const step = document.createElement('canvas');
+        const half = Math.round(side / 2);
+        step.width = half;
+        step.height = half;
+        const stepCtx = step.getContext('2d');
+        stepCtx.imageSmoothingQuality = 'high';
+        stepCtx.drawImage(source, sx, sy, side, side, 0, 0, half, half);
+        source = step;
+        side = half;
+        sx = 0;
+        sy = 0;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      // JPEG has no alpha channel: a transparent PNG source gets the
+      // signature's white background instead of black.
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, size, size);
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(source, sx, sy, side, side, 0, 0, size, size);
+      resolve(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('The file could not be decoded as an image'));
+    };
+    img.src = url;
+  });
+}
 
 function App() {
   const [formData, setFormData] = useState({
@@ -29,18 +90,19 @@ function App() {
     }));
   };
 
-  const handlePhotoUpload = (e) => {
+  const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({
-          ...prev,
-          photo: file,
-          photoPreview: reader.result
-        }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const photoPreview = await cropPhotoToSquare(file, PHOTO_SIZE * RENDER_SCALE);
+      setFormData(prev => ({
+        ...prev,
+        photo: file,
+        photoPreview
+      }));
+    } catch (err) {
+      console.error('Failed to process photo:', err);
+      alert('This file could not be read as an image. Please upload a JPG or PNG photo.');
     }
   };
 
@@ -73,6 +135,11 @@ function App() {
         <form className="signature-form">
           <div className="form-group">
             <label htmlFor="photo">Photo Upload *</label>
+            <p className="field-hint">
+              Any photo shape works. It is cropped to a centered square and
+              resized here, so what you see in the preview is exactly what
+              Outlook sends.
+            </p>
             <input
               type="file"
               id="photo"
@@ -186,19 +253,20 @@ function App() {
                               <img
                                 src={formData.photoPreview}
                                 alt={formData.name}
+                                width={PHOTO_SIZE}
+                                height={PHOTO_SIZE}
                                 style={{
-                                  width: "100px",
-                                  height: "100px",
+                                  width: `${PHOTO_SIZE}px`,
+                                  height: `${PHOTO_SIZE}px`,
                                   borderRadius: "2px",
-                                  objectFit: "cover",
                                   display: "block",
                                 }}
                               />
                             ) : (
                               <div
                                 style={{
-                                  width: "100px",
-                                  height: "100px",
+                                  width: `${PHOTO_SIZE}px`,
+                                  height: `${PHOTO_SIZE}px`,
                                   backgroundColor: "#f0f0f0",
                                   borderRadius: "2px",
                                   display: "flex",
@@ -218,9 +286,11 @@ function App() {
                             <img
                               src={spreadLogo}
                               alt="SPREAD"
+                              width={LOGO_WIDTH}
+                              height={LOGO_HEIGHT}
                               style={{
-                                width: "92px",
-                                height: "20px",
+                                width: `${LOGO_WIDTH}px`,
+                                height: `${LOGO_HEIGHT}px`,
                                 display: "block",
                               }}
                             />
